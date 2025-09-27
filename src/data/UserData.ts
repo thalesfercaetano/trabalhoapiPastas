@@ -1,23 +1,27 @@
-import { Artigo } from "../types/types";
-import { pessoas } from "./database";
+import { User } from "../types/types";
+import { users } from "./database";
 
-export class DadosPessoa {
-  public buscarTodasPessoas = () => {
-    return pessoas;
-  };
+export class UserData {
+    public findAllUsers = () => {
+        return users;
+    }
 
-  public buscarPessoaPorId = (id: number) => {
-    return pessoas.find((p) => p.id === id);
-  };
+    public findById = (id: number) => {
+        return users.find((u) => u.id === id);
+    };
 
-  public buscarPessoasPorIdade = (idadeMin: number, idadeMax: number) => {
-    return pessoas.filter((pessoa) => pessoa.idade >= idadeMin && pessoa.idade <= idadeMax);
-  };
+    public findByEmail = (email: string) => {
+        return users.find(u => u.email === email);
+    }
 
-  public buscarPessoasSemArtigos = (todosArtigos: Artigo[]) => {
-    return pessoas.filter((pessoa) => {
-      const temArtigos = todosArtigos.some((artigo) => artigo.autorId === pessoa.id);
-      return !temArtigos && pessoa.tipo !== "administrador";
-    });
-  };
+    public findByAgeRange = (min: number, max: number) => {
+        return users.filter((user) => user.age >= min && user.age <= max);
+    };
+    
+    public deleteUsers = (usersToDelete: User[]) => {
+        const idsToDelete = usersToDelete.map(u => u.id);
+        const updatedUsers = users.filter(user => !idsToDelete.includes(user.id));
+
+        users.splice(0, users.length, ...updatedUsers);
+    }
 }

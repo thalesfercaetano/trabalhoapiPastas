@@ -1,91 +1,89 @@
-import { DadosArtigo } from "../data/Postdata";
-import { DadosPessoa } from "../data/UserData";
-import { Artigo } from "../types/types";
+import { PostData } from "../data/Postdata";
+import { UserData } from "../data/UserData";
+import { Post } from "../types/types";
 
-export class LogicaArtigo {
-  private dadosArtigo = new DadosArtigo();
-  private dadosPessoa = new DadosPessoa();
+export class PostBusiness {
+    private postData = new PostData();
+    private userData = new UserData();
 
-  public buscarTodosArtigos() {
-    return this.dadosArtigo.buscarTodosArtigos();
-  }
-
-  public criarArtigo(titulo: string, texto: string, autorId: number) {
-    if (!titulo || !texto || !autorId) {
-      throw new Error(
-        "Os campos 'titulo', 'texto' e 'autorId' são necessários."
-      );
-    }
-    if (typeof titulo !== "string" || titulo.length < 3) {
-      throw new Error("O título precisa ter pelo menos 3 letras.");
-    }
-    if (typeof texto !== "string" || texto.length < 10) {
-      throw new Error("O texto precisa ter pelo menos 10 letras.");
+    public getAllPosts = () => {
+        return this.postData.findAllPosts();
     }
 
-    const autor = this.dadosPessoa.buscarPessoaPorId(autorId);
-    if (!autor) {
-      throw new Error("Autor não foi encontrado.");
+    public createPost = (title: string, content: string, authorId: number) => {
+
+      if (!title || !content || authorId === undefined) {
+            throw new Error("Dados incompletos: 'title', 'content' e 'authorId' são obrigatórios.");
+        }
+        if (typeof title !== 'string' || title.length < 3) {
+            throw new Error("Título inválido. Deve ser um texto com pelo menos 3 caracteres.");
+        }
+        if (typeof content !== 'string' || content.length < 10) {
+            throw new Error("Conteúdo deve ter pelo menos 10 caracteres.");
+        }
+        if (!this.userData.findById(authorId)) {
+            throw new Error("Autor não existe.");
+        }
+        
+        const newPost: Post = {
+            id: Date.now(),
+            title,
+            content,
+            authorId,
+            createdAt: new Date(),
+            published: false,
+        };
+        
+        this.postData.create(newPost);
+        return newPost;
     }
 
-    const novoId = this.dadosArtigo.criarNovoId();
+    public updatePost = (id: number, dataToUpdate: any) => {
+        if (isNaN(id)) { throw new Error("ID do post inválido."); }
+        
+        const post = this.postData.findById(id);
+        if (!post) { throw new Error("Post não encontrado."); }
+        
+        if (dataToUpdate.id !== undefined || dataToUpdate.authorId !== undefined || dataToUpdate.createdAt !== undefined) {
+            throw new Error("Não é possível atualizar os campos 'id', 'authorId' ou 'createdAt'.");
+        }
+        
+        if (dataToUpdate.title !== undefined) {
+            if (typeof dataToUpdate.title !== 'string' || dataToUpdate.title.length < 3) {
+                throw new Error('Título deve ter pelo menos 3 caracteres.');
+            }
+            post.title = dataToUpdate.title;
+        }
+        if (dataToUpdate.content !== undefined) {
+            if (typeof dataToUpdate.content !== 'string' || dataToUpdate.content.length < 10) {
+                throw new Error('Conteúdo deve ter pelo menos 10 caracteres.');
+            }
+            post.content = dataToUpdate.content;
+        }
+        if (dataToUpdate.published !== undefined) {
+            if (typeof dataToUpdate.published !== 'boolean') {
+                throw new Error('O campo "published" deve ser booleano.');
+            }
+            post.published = dataToUpdate.published;
+        }
 
-    const novoArtigo: Artigo = {
-      id: novoId,
-      titulo,
-      texto,
-      autorId,
-      dataCriacao: new Date(),
-      publicado: false,
-    };
-
-    this.dadosArtigo.adicionar(novoArtigo);
-    return novoArtigo;
-  }
-
-  public atualizarArtigo(id: number, dadosParaAtualizar: any) {
-    if (isNaN(id)) {
-      throw new Error("ID do artigo não é válido.");
+        this.postData.update(id, post);
+        return post;
     }
+    
+    public deletePost = (postId: number, userId: number) => {
+        if (isNaN(postId) || isNaN(userId)) { throw new Error("IDs inválidos."); }
+        
+        const post = this.postData.findById(postId);
+        if (!post) { throw new Error("Post não encontrado."); }
 
-    const artigo = this.dadosArtigo.buscarPorId(id);
-    if (!artigo) {
-      throw new Error("Artigo não foi encontrado.");
+        const user = this.userData.findById(userId);
+        if (!user) { throw new Error("Usuário não encontrado."); }
+        
+        if (post.authorId !== user.id && user.role !== 'admin') {
+            throw new Error("Apenas o autor ou um admin podem deletar esse post.");
+        }
+
+        this.postData.delete(postId);
     }
-
-    if (
-      dadosParaAtualizar.id !== undefined ||
-      dadosParaAtualizar.autorId !== undefined ||
-      dadosParaAtualizar.dataCriacao !== undefined
-    ) {
-      throw new Error(
-        "Não pode alterar os campos 'id', 'autorId' ou 'dataCriacao'."
-      );
-    }
-
-    this.dadosArtigo.atualizar(id, dadosParaAtualizar);
-    return this.dadosArtigo.buscarPorId(id);
-  }
-
-  public deletarArtigo(artigoId: number, pessoaId: number) {
-    if (isNaN(artigoId) || isNaN(pessoaId)) {
-      throw new Error("Os IDs não são válidos.");
-    }
-
-    const artigo = this.dadosArtigo.buscarPorId(artigoId);
-    if (!artigo) {
-      throw new Error("Artigo não foi encontrado.");
-    }
-
-    const pessoa = this.dadosPessoa.buscarPessoaPorId(pessoaId);
-    if (!pessoa) {
-      throw new Error("Pessoa não foi encontrada.");
-    }
-
-    if (artigo.autorId !== pessoa.id && pessoa.tipo !== "administrador") {
-      throw new Error("Você não pode deletar este artigo.");
-    }
-
-    this.dadosArtigo.remover(artigoId);
-  }
 }

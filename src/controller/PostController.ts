@@ -1,47 +1,61 @@
 import { Request, Response } from "express";
-import { LogicaArtigo } from "../business/PostBusiness";
+import { PostBusiness } from "../business/PostBusiness";
 
-export class ControladorArtigo {
-  private logicaArtigo = new LogicaArtigo();
+export class PostController {
+    private postBusiness = new PostBusiness();
 
-  public buscarTodosArtigos = (req: Request, res: Response) => {
-    try {
-      const todosArtigos = this.logicaArtigo.buscarTodosArtigos();
-      res.status(200).send(todosArtigos);
-    } catch (error: any) {
-      res.status(400).send({ mensagem: error.message });
+    public getAllPosts = (req: Request, res: Response) => {
+        try {
+            const allPosts = this.postBusiness.getAllPosts();
+            res.status(200).send(allPosts);
+        } catch (error: any) {
+            res.status(400).send({ message: error.message });
+        }
     }
-  };
 
-  public criarArtigo = (req: Request, res: Response) => {
-    try {
-      const { titulo, texto, autorId } = req.body;
-      const novoArtigo = this.logicaArtigo.criarArtigo(titulo, texto, autorId);
-      res.status(201).send(novoArtigo);
-    } catch (error: any) {
-      res.status(400).send({ mensagem: error.message });
-    }
-  };
+    public createPost = (req: Request, res: Response) => {
+        try {
+            const { title, content, authorId } = req.body;
+            const newPost = this.postBusiness.createPost(title, content, authorId);
+            res.status(201).send(newPost);
+        } catch (error: any) {
+            if (error.message.includes("não existe")) {
+                res.status(404).send({ message: error.message });
+            } else {
+                res.status(400).send({ message: error.message });
+            }
+        }
+    };
 
-  public atualizarArtigo = (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      const dadosParaAtualizar = req.body;
-      const artigoAtualizado = this.logicaArtigo.atualizarArtigo(id, dadosParaAtualizar);
-      res.status(200).send(artigoAtualizado);
-    } catch (error: any) {
-      res.status(400).send({ mensagem: error.message });
-    }
-  };
-
-  public deletarArtigo = (req: Request, res: Response) => {
-    try {
-      const artigoId = parseInt(req.params.id);
-      const pessoaId = parseInt(req.headers["pessoa-id"] as string);
-      this.logicaArtigo.deletarArtigo(artigoId, pessoaId);
-      res.status(200).send({ mensagem: "Artigo foi deletado com sucesso." });
-    } catch (error: any) {
-      res.status(400).send({ mensagem: error.message });
-    }
-  };
+    public updatePost = (req: Request, res: Response) => {
+        try {
+            const id = parseInt(req.params.id);
+            const dataToUpdate = req.body;
+            const updatedPost = this.postBusiness.updatePost(id, dataToUpdate);
+            res.status(200).send(updatedPost);
+        } catch (error: any) {
+            if (error.message.includes("não encontrado")) {
+                res.status(404).send({ message: error.message });
+            } else {
+                res.status(400).send({ message: error.message });
+            }
+        }
+    };
+    
+    public deletePost = (req: Request, res: Response) => {
+        try {
+            const postId = parseInt(req.params.id);
+            const userId = parseInt(req.headers['user-id'] as string);
+            this.postBusiness.deletePost(postId, userId);
+            res.status(200).send({ message: "Post deletado com sucesso." });
+        } catch (error: any) {
+            if (error.message.includes("permissão")) {
+                res.status(403).send({ message: error.message });
+            } else if (error.message.includes("não encontrado")) {
+                res.status(404).send({ message: error.message });
+            } else {
+                res.status(400).send({ message: error.message });
+            }
+        }
+    };
 }

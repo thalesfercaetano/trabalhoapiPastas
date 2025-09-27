@@ -1,10 +1,10 @@
 import express from "express";
-import { ControladorPessoa } from "../controller/UserController";
+import { UserController } from "../controller/UserController";
 
-export const rotaPessoa = express.Router();
+export const userRouter = express.Router();
 
-const controladorPessoa = new ControladorPessoa();
+const userController = new UserController();
 
-rotaPessoa.get("/por-idade", controladorPessoa.buscarPessoasPorIdade);
-rotaPessoa.get("/:id", controladorPessoa.buscarPessoaPorId);
-rotaPessoa.delete("/limpar-sem-artigos", controladorPessoa.limparPessoasSemArtigos);
+userRouter.get("/age-range", userController.getUsersByAgeRange);
+userRouter.get("/:id", userController.getUserById);
+userRouter.delete("/cleanup-inactive", userController.cleanupInactiveUsers);

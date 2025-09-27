@@ -1,9 +1,12 @@
-import { Artigo, Pessoa } from "../types/types";
+import { User, Post } from "../types/types";
 
-export let pessoas: Pessoa[] = [
-  { id: 1, nome: "Maria Silva", email: "maria@gmail.com", idade: 30, tipo: "administrador" },
-  { id: 2, nome: "João Santos", email: "joao@hotmail.com", idade: 24, tipo: "usuario" },
-  { id: 3, nome: "Ana Costa", email: "ana@yahoo.com", idade: 27, tipo: "usuario" },
+export let users: User[] = [
+    { id: 1, name: "Flávio", email: "flavio@flavio.com", senha: "flavio", age: 25, role: "admin" },
+    { id: 2, name: "Thales", email: "thales@teste.com", senha: "thales123", age: 20, role: "user" },
+    { id: 3, name: "Mariana", email: "mariana@teste.com", senha: "mari2025", age: 28, role: "user" },
+    { id: 4, name: "João", email: "joao@teste.com", senha: "joao321", age: 30, role: "user" },
+    { id: 5, name: "Carla", email: "carla@teste.com", senha: "carla456", age: 27, role: "user" },
+    { id: 6, name: "Lucas", email: "lucas@teste.com", senha: "lucas789", age: 24, role: "user" }
 ];
 
-export let artigos: Artigo[] = [];
+export let posts: Post[] = [];

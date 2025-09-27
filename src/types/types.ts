@@ -1,16 +1,17 @@
-export type Pessoa = {
-  id: number;
-  nome: string;
-  email: string;
-  idade: number;
-  tipo: "administrador" | "usuario";
+export type User = {
+    id: number;
+    name: string;
+    email: string;
+    senha: string;
+    age: number;
+    role: string;
 };
 
-export interface Artigo {
-  id: number;
-  titulo: string;
-  texto: string;
-  autorId: number;
-  dataCriacao: Date;
-  publicado: boolean;
-}
+export type Post = {
+    id: number;
+    title: string;
+    content: string;
+    authorId: number;
+    createdAt: Date;
+    published: boolean;
+};

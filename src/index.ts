@@ -1,10 +1,10 @@
-import { aplicacao } from "./app";
-import { rotaArtigo } from "./routes/postRoutes";
-import { rotaPessoa } from "./routes/userRouter";
+import { app } from "./app";
+import { postRouter } from "./routes/postRouter";
+import { userRouter } from "./routes/userRouter";
 
-aplicacao.use("/pessoas", rotaPessoa);
-aplicacao.use("/artigos", rotaArtigo);
+app.use("/users", userRouter);
+app.use("/posts", postRouter);
 
-aplicacao.listen(3003, () => {
-  console.log("API está funcionando na porta 3003");
+app.listen(3003, () => {
+    console.log("Servidor rodando na porta 3003");
 });

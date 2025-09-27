@@ -1,37 +1,41 @@
 import { Request, Response } from "express";
-import { LogicaPessoa } from "../business/UserBusiness";
+import { UserBusiness } from "../business/UserBusiness";
 
-export class ControladorPessoa {
-  private logicaPessoa = new LogicaPessoa();
+export class UserController {
+    private userBusiness = new UserBusiness();
 
-  public buscarPessoaPorId = (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      const pessoa = this.logicaPessoa.buscarPessoaPorId(id);
-      res.status(200).send(pessoa);
-    } catch (error: any) {
-      res.status(400).send({ mensagem: error.message });
-    }
-  };
+    public getUserById = (req: Request, res: Response) => {
+        try {
+            const id = parseInt(req.params.id);
+            const user = this.userBusiness.getUserById(id);
+            res.status(200).send(user);
+        } catch (error: any) {
+            if (error.message.includes("não encontrado")) {
+                res.status(404).send({ message: error.message });
+            } else {
+                res.status(400).send({ message: error.message });
+            }
+        }
+    };
 
-  public buscarPessoasPorIdade = (req: Request, res: Response) => {
-    try {
-      const idadeMin = parseInt(req.query.idadeMin as string);
-      const idadeMax = parseInt(req.query.idadeMax as string);
-      const pessoas = this.logicaPessoa.buscarPessoasPorIdade(idadeMin, idadeMax);
-      res.status(200).send(pessoas);
-    } catch (error: any) {
-      res.status(400).send({ mensagem: error.message });
-    }
-  };
+    public getUsersByAgeRange = (req: Request, res: Response) => {
+        try {
+            const min = parseInt(req.query.min as string);
+            const max = parseInt(req.query.max as string);
+            const users = this.userBusiness.getUsersByAgeRange(min, max);
+            res.status(200).send(users);
+        } catch (error: any) {
+            res.status(400).send({ message: error.message });
+        }
+    };
 
-  public limparPessoasSemArtigos = (req: Request, res: Response) => {
-    try {
-      const confirmar = req.query.confirmar as string;
-      const pessoasRemovidas = this.logicaPessoa.limparPessoasSemArtigos(confirmar);
-      res.status(200).send(pessoasRemovidas);
-    } catch (error: any) {
-      res.status(400).send({ mensagem: error.message });
-    }
-  };
+    public cleanupInactiveUsers = (req: Request, res: Response) => {
+        try {
+            const confirm = req.query.confirm as string;
+            const removedUsers = this.userBusiness.cleanupInactiveUsers(confirm);
+            res.status(200).send(removedUsers);
+        } catch (error: any) {
+            res.status(400).send({ message: error.message });
+        }
+    };
 }
