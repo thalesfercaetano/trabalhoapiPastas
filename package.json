@@ -1,12 +1,12 @@
 {
   "name": "trabalhoapi",
   "version": "1.0.0",
-  "description": "Uma API básica para gerenciar pessoas e artigos",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "rodar": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "compilar": "tsc",
-    "iniciar": "node dist/index.js"
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
